@@ -1,0 +1,11 @@
+# Secrets SMTP locaux (ne jamais committer)
+src/main/resources/email.local.properties
+email.local.properties
+
+# Fichiers PDF patients (contenu sensible)
+uploads/patients/
+
+target/
+.classpath
+.project
+.settings/

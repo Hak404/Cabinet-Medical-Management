@@ -1,0 +1,65 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%
+    String ctx = request.getContextPath();
+%>
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Médecin - Ordonnances</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<%= ctx %>/css/style.css">
+    <link rel="stylesheet" href="<%= ctx %>/css/sidebar.css">
+</head>
+<body>
+<jsp:include page="/shared/navbar.jsp">
+    <jsp:param name="title" value="Ordonnances"/>
+    <jsp:param name="userLabel" value="Médecin"/>
+</jsp:include>
+<div class="app-shell">
+    <jsp:include page="/shared/sidebar.jsp">
+        <jsp:param name="type" value="medecin"/>
+    </jsp:include>
+    <main class="app-main">
+        <div class="container-fluid px-0">
+            <div class="cm-card p-3 mb-3">
+                <form method="get" action="<%= ctx %>/medecin/ordonnances" class="row g-2 align-items-end">
+                    <div class="col-md-4"><label class="form-label fw-semibold">Date</label><input type="date" class="form-control" name="selectedDate" value="${selectedDate}"></div>
+                    <div class="col-md-4"><label class="form-label fw-semibold">Cabinet</label><input type="text" class="form-control" value="${currentCabinetId}" disabled></div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrer</button></div>
+                </form>
+            </div>
+            <div class="cm-card">
+                <div class="card-header p-3 fw-bold">Ordonnances du ${selectedDate}</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th class="ps-3">Patient</th><th>ID ordonnance</th><th>Consultation</th><th>Statut</th><th>Détail</th></tr></thead>
+                            <tbody>
+                            <c:forEach items="${ordonnances}" var="o">
+                                <tr>
+                                    <td class="ps-3">${o.patientNomComplet}</td>
+                                    <td>#${o.id}</td>
+                                    <td>#${o.consultationId}</td>
+                                    <td>${o.statut}</td>
+                                    <td><a class="btn btn-sm btn-outline-primary" href="<%= ctx %>/medecin/consultation?rdvId=${o.rendezVousId}&selectedDate=${selectedDate}">Voir consultation</a></td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty ordonnances}">
+                                <tr><td class="ps-3 text-muted" colspan="5">Aucune ordonnance ce jour.</td></tr>
+                            </c:if>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Déploiement Tomcat : URIEncoding=UTF-8 doit aussi être défini sur le Connector HTTP.
+  Dans conf/server.xml (Tomcat 10) :
+    <Connector port="8080" ... URIEncoding="UTF-8" useBodyEncodingForURI="true" />
+-->
+<Context/>

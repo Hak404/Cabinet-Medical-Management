@@ -1,0 +1,28 @@
+# Exemple de configuration — copier vers src/main/resources/email.local.properties
+# ou définir les variables d'environnement listées ci-dessous.
+
+# Copier ce fichier vers email.local.properties (même dossier) — ne pas committer les mots de passe.
+email.enabled=true
+email.log.otp.on.failure=false
+
+email.host=smtp.gmail.com
+email.port=587
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=587
+mail.smtp.ssl.enable=false
+mail.smtp.auth=true
+mail.smtp.starttls.enable=true
+
+# Compte Gmail + mot de passe d'application (https://myaccount.google.com/apppasswords)
+mail.smtp.user=votre.adresse@gmail.com
+mail.smtp.password=VOTRE_MOT_DE_PASSE_APPLICATION
+
+email.from=votre.adresse@gmail.com
+mail.from=votre.adresse@gmail.com
+mail.from.name=Cabinet Medical
+
+# Variables d'environnement (prioritaires sur le fichier) :
+#   EMAIL_ENABLED=true
+#   EMAIL_SMTP_HOST, EMAIL_SMTP_PORT
+#   EMAIL_SMTP_USER, EMAIL_SMTP_PASSWORD
+#   EMAIL_FROM, EMAIL_FROM_NAME
