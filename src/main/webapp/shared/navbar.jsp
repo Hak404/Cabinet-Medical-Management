@@ -1,12 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%
-    String ctx = request.getContextPath();
-    String pageTitle = request.getParameter("title");
-    if (pageTitle == null || pageTitle.trim().isEmpty()) pageTitle = "Dashboard";
-
-    String userLabel = request.getParameter("userLabel");
-    if (userLabel == null || userLabel.trim().isEmpty()) userLabel = "Utilisateur";
-%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top app-navbar">
     <div class="container-fluid px-3 px-lg-4">
@@ -19,7 +12,7 @@
             <i class="fa-solid fa-bars"></i>
         </button>
 
-        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary" href="<%= ctx %>/">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary" href="${pageContext.request.contextPath}/">
             <span class="brand-mark">
                 <i class="fa-solid fa-heart-pulse"></i>
             </span>
@@ -28,7 +21,9 @@
 
         <div class="d-none d-lg-flex align-items-center ms-3">
             <span class="text-muted small">/</span>
-            <span class="ms-2 fw-semibold text-dark"><%= pageTitle %></span>
+            <span class="ms-2 fw-semibold text-dark">
+                <c:out value="${not empty param.title ? param.title : 'Dashboard'}" />
+            </span>
         </div>
 
         <div class="ms-auto d-flex align-items-center gap-2">
@@ -49,7 +44,16 @@
                     <span class="avatar-circle">
                         <i class="fa-solid fa-user-doctor"></i>
                     </span>
-                    <span class="d-none d-sm-inline"><%= userLabel %></span>
+                    <span class="d-none d-sm-inline">
+                        <c:choose>
+                            <c:when test="${not empty sessionScope.user}">
+                                <c:out value="${sessionScope.user.prenom} ${sessionScope.user.nom}" />
+                            </c:when>
+                            <c:otherwise>
+                                <c:out value="${not empty param.userLabel ? param.userLabel : 'Utilisateur'}" />
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                     <li class="dropdown-header text-muted">Compte</li>
@@ -65,7 +69,7 @@
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item text-danger" href="<%= ctx %>/logout">
+                        <a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/logout">
                             <i class="fa-solid fa-right-from-bracket me-2"></i>Déconnexion
                         </a>
                     </li>

@@ -19,6 +19,8 @@ import java.io.IOException;
 @WebServlet("/secretaire/dashboard")
 public class DashboardSecretaireServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Affiche le tableau de bord secrétaire.
      *

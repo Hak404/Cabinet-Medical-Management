@@ -2,6 +2,7 @@ package com.cabinet.controller;
 
 import com.cabinet.model.User;
 import com.cabinet.service.AuthService;
+import com.cabinet.util.CsrfTokenUtil;
 import com.cabinet.util.SessionUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,6 +24,8 @@ import java.io.IOException;
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
 
     private final AuthService authService = new AuthService();
 
@@ -46,6 +49,9 @@ public class LoginServlet extends HttpServlet {
             SessionUtil.redirectToRoleHome(existing, request, response);
             return;
         }
+
+        // Générer/Récupérer le jeton CSRF pour le formulaire de login
+        CsrfTokenUtil.getToken(request);
 
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
@@ -72,6 +78,12 @@ public class LoginServlet extends HttpServlet {
         if (user == null) {
             response.sendRedirect(request.getContextPath() + "/login?error=identifiants_incorrects");
             return;
+        }
+
+        // Prévention Session Fixation : on invalide la session existante avant d'en créer une nouvelle
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
         }
 
         HttpSession session = request.getSession(true);

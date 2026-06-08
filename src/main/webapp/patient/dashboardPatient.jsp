@@ -61,6 +61,7 @@
                                 <c:when test="${r.patientCancellationAllowed}">
                                     <form method="post" action="${pageContext.request.contextPath}/patient/rdv/cancel"
                                           onsubmit="return confirm('Confirmer l\u2019annulation de ce rendez-vous ?');">
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                         <input type="hidden" name="id" value="${r.id}">
                                         <button type="submit" class="btn btn-secondary" style="font-size: 0.85rem;">
                                             Annuler RDV

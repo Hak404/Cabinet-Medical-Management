@@ -293,6 +293,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                         </div>
                         <form method="post" action="<%= ctx %>/admin/patients/add">
+                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                             <div class="modal-body">
                                 <div class="row g-3">
                                     <div class="col-md-6">

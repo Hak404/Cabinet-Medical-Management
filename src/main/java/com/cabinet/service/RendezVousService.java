@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Service de gestion des créneaux et de la réservation de rendez-vous.
@@ -93,12 +94,12 @@ public class RendezVousService {
             return List.of();
         }
 
-        Medecin medecin = medecinDAO.findById(medecinId);
-        if (medecin == null || !medecin.getCabinetId().equals(cabinetId)) {
+        Medecin medecin = medecinDAO.findById(medecinId).orElse(null);
+        if (medecin == null || !Objects.equals(medecin.getCabinetId(), cabinetId)) {
             return List.of();
         }
 
-        Cabinet cabinet = cabinetDAO.findById(cabinetId);
+        Cabinet cabinet = cabinetDAO.findById(cabinetId).orElse(null);
         if (cabinet == null) return List.of();
 
         int durationMinutes = cabinet.getDureeConsultationMinutes(); // 20min ou 30min
@@ -149,8 +150,8 @@ public class RendezVousService {
             throw new IllegalStateException("Le médecin est indisponible (en congé)");
         }
 
-        Medecin medecin = medecinDAO.findById(medecinId);
-        Cabinet cabinet = cabinetDAO.findById(cabinetId);
+        Medecin medecin = medecinDAO.findById(medecinId).orElse(null);
+        Cabinet cabinet = cabinetDAO.findById(cabinetId).orElse(null);
         if (medecin == null || cabinet == null) throw new IllegalArgumentException("Données introuvables");
 
         int durationMinutes = cabinet.getDureeConsultationMinutes();
@@ -161,7 +162,7 @@ public class RendezVousService {
             throw new IllegalStateException("Ce créneau vient d'être réservé");
         }
 
-        Patient patient = patientDAO.findById(patientId);
+        Patient patient = patientDAO.findById(patientId).orElse(null);
         if (patient == null) throw new IllegalArgumentException("Patient introuvable");
 
         // 4. Création de l'objet RendezVous[cite: 1]
@@ -174,6 +175,9 @@ public class RendezVousService {
         rv.setEndTime(slotEnd);
         rv.setStatut(RendezVous.Statut.CONFIRME);
 
-        return rendezVousDAO.save(rv); // Enregistrement SQL[cite: 1]
+        if (rendezVousDAO.save(rv)) {
+            return rv;
+        }
+        throw new RuntimeException("Erreur lors de l'enregistrement du rendez-vous");
     }
 }

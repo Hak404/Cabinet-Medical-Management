@@ -22,6 +22,7 @@ import java.time.LocalDate;
 @WebServlet("/admin/patients/add")
 public class AddPatientServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final PatientDAO patientDAO = new PatientDAO();
 
     /**

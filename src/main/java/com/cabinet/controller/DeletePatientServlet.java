@@ -20,6 +20,7 @@ import java.io.IOException;
 @WebServlet("/admin/patients/delete")
 public class DeletePatientServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final PatientDAO patientDAO = new PatientDAO();
 
     /**

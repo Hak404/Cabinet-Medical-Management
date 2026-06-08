@@ -27,6 +27,7 @@ import java.time.LocalTime;
 @WebServlet("/admin/cabinets-medecins/add")
 public class AddCabinetMedecinServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final CabinetDAO cabinetDAO = new CabinetDAO();
 
     /**

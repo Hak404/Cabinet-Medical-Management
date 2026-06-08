@@ -1,6 +1,7 @@
 package com.cabinet.controller;
 
 import com.cabinet.model.User;
+import com.cabinet.util.CsrfTokenUtil;
 import com.cabinet.util.RdvOtpConstants;
 import com.cabinet.util.SessionUtil;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,8 @@ import java.io.IOException;
 @WebServlet("/patient/verification-rdv")
 public class VerificationRdvServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -29,6 +32,9 @@ public class VerificationRdvServlet extends HttpServlet {
             response.sendRedirect(ctx + "/login");
             return;
         }
+
+        // Générer le jeton CSRF pour les formulaires de vérification OTP
+        CsrfTokenUtil.getToken(request);
 
         boolean rdvOtpPending = ConfirmOTPServlet.FLOW_RDV.equals(session.getAttribute(ConfirmOTPServlet.SESSION_OTP_FLOW))
                 && session.getAttribute(RdvOtpConstants.TEMP_CABINET_ID) != null;

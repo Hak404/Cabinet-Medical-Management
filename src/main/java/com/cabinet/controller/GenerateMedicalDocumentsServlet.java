@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 @WebServlet("/medecin/consultation/generate-documents")
 public class GenerateMedicalDocumentsServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final MedicalDocumentService medicalDocumentService = new MedicalDocumentService();
 
     @Override

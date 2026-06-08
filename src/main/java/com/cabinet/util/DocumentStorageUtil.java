@@ -8,72 +8,64 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Gestion des chemins de stockage des PDF patients ({@code uploads/patients/{patientId}/}).
+ * Gestion sécurisée des chemins de stockage des documents.
  */
 public final class DocumentStorageUtil {
 
     private static final DateTimeFormatter FILE_DATE = DateTimeFormatter.ofPattern("yyyy_MM_dd");
 
-    private DocumentStorageUtil() {
-    }
+    private DocumentStorageUtil() {}
 
-    /**
-     * Répertoire racine des uploads (variable d'environnement {@code CABINET_UPLOADS_DIR}
-     * ou {@code uploads} sous le répertoire de travail du serveur).
-     */
     public static Path getUploadsRoot() {
-        String env = System.getenv("CABINET_UPLOADS_DIR");
-        if (env != null && !env.isBlank()) {
-            return Paths.get(env.trim()).toAbsolutePath().normalize();
-        }
         String catalinaBase = System.getProperty("catalina.base");
+        Path root;
         if (catalinaBase != null && !catalinaBase.isBlank()) {
-            return Paths.get(catalinaBase, "cabinet-uploads").toAbsolutePath().normalize();
+            root = Paths.get(catalinaBase, "cabinet-uploads");
+        } else {
+            root = Paths.get(System.getProperty("user.dir"), "uploads");
         }
-        return Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
+        return root.toAbsolutePath().normalize();
     }
 
-    /**
-     * Répertoire patient : {@code uploads/patients/{patientId}/}.
-     */
     public static Path getPatientDirectory(long patientId) throws IOException {
-        Path dir = getUploadsRoot().resolve("patients").resolve(String.valueOf(patientId));
+        Path dir = getUploadsRoot().resolve("patients").resolve(String.valueOf(patientId)).normalize();
+        
+        // Sécurité : Vérifier que le chemin reste dans la racine des uploads
+        if (!dir.startsWith(getUploadsRoot())) {
+            throw new SecurityException("Tentative de Path Traversal détectée");
+        }
+
         Files.createDirectories(dir);
         return dir;
     }
 
-    /**
-     * Chemin relatif stocké en base (sous la racine uploads).
-     */
-    public static String toRelativePath(Path absoluteFile) {
-        Path root = getUploadsRoot();
-        Path normalized = absoluteFile.toAbsolutePath().normalize();
-        if (normalized.startsWith(root)) {
-            return root.relativize(normalized).toString().replace('\\', '/');
-        }
-        return normalized.toString().replace('\\', '/');
-    }
-
-    /**
-     * Résout un chemin relatif enregistré en base vers un fichier absolu.
-     */
     public static Path resolveStoredPath(String filePath) {
         if (filePath == null || filePath.isBlank()) {
             throw new IllegalArgumentException("Chemin fichier vide");
         }
-        Path p = Paths.get(filePath);
-        if (p.isAbsolute()) {
-            return p.normalize();
+        
+        // On interdit les séquences de remontée dans le chemin stocké
+        if (filePath.contains("..")) {
+            throw new SecurityException("Chemin de fichier invalide");
         }
-        return getUploadsRoot().resolve(filePath).normalize();
+
+        Path p = getUploadsRoot().resolve(filePath).normalize();
+
+        // Sécurité : Vérifier que le chemin résolu reste dans la racine des uploads
+        if (!p.startsWith(getUploadsRoot())) {
+            throw new SecurityException("Tentative de Path Traversal détectée");
+        }
+
+        return p;
     }
 
-    /**
-     * Génère un nom de fichier sécurisé, ex. {@code ordonnance_2026_05_29.pdf}.
-     */
     public static String buildFileName(String prefix, LocalDate date) {
         String safePrefix = prefix.replaceAll("[^a-zA-Z0-9_-]", "_").toLowerCase();
         String d = FILE_DATE.format(date != null ? date : LocalDate.now());
         return safePrefix + "_" + d + "_" + System.currentTimeMillis() + ".pdf";
+    }
+
+    public static String toRelativePath(Path absoluteFile) {
+        return getUploadsRoot().relativize(absoluteFile).toString().replace('\\', '/');
     }
 }

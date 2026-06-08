@@ -24,6 +24,7 @@ import java.util.List;
  */
 @WebServlet("/medecin/ordonnances")
 public class MedecinOrdonnancesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final OrdonnanceDAO ordonnanceDAO = new OrdonnanceDAO();
     private final MedecinDAO medecinDAO = new MedecinDAO();
 
@@ -51,7 +52,7 @@ public class MedecinOrdonnancesServlet extends HttpServlet {
         }
         LocalDate selectedDate = parseDate(request.getParameter("selectedDate"));
         List<OrdonnanceDAO.OrdonnanceView> ordonnances = ordonnanceDAO.findByMedecinAndDate(user.getId(), selectedDate);
-        Medecin medecin = medecinDAO.findById(user.getId());
+        Medecin medecin = medecinDAO.findById(user.getId()).orElse(null);;
         request.setAttribute("selectedDate", selectedDate);
         request.setAttribute("currentCabinetId", medecin != null ? medecin.getCabinetId() : null);
         request.setAttribute("ordonnances", ordonnances);

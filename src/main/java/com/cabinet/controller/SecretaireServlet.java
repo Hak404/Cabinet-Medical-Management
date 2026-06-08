@@ -24,6 +24,7 @@ import java.io.IOException;
 @WebServlet("/medecin/secretaire/add")
 public class SecretaireServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final SecretaireDAO secretaireDAO = new SecretaireDAO();
     private final MedecinDAO medecinDAO = new MedecinDAO();
 
@@ -53,7 +54,7 @@ public class SecretaireServlet extends HttpServlet {
         }
 
         // Récupère automatiquement le cabinet du médecin connecté (pas depuis le formulaire).
-        Medecin medecin = medecinDAO.findById(user.getId());
+        Medecin medecin = medecinDAO.findById(user.getId()).orElse(null);;
         if (medecin == null || medecin.getCabinetId() == null) {
             response.sendRedirect(request.getContextPath() + "/medecin/dashboard?error=cabinet_introuvable");
             return;

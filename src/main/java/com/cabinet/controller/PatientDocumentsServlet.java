@@ -17,6 +17,7 @@ import java.io.IOException;
 @WebServlet("/patient/documents")
 public class PatientDocumentsServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final DocumentMedicalDAO documentMedicalDAO = new DocumentMedicalDAO();
 
     @Override

@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 @WebServlet("/patient/rendezvous")
 public class RendezVousServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RendezVousServlet.class.getName());
 
     private final CabinetDAO cabinetDAO = new CabinetDAO();

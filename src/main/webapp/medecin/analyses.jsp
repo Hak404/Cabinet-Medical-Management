@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%-- JSTL 3.0 configuration --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%
     String ctx = request.getContextPath();

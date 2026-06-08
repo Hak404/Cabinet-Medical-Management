@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vérification du rendez-vous</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; }
         .verification-card {
@@ -71,6 +72,7 @@
         <% } %>
 
         <form action="${pageContext.request.contextPath}/patient/confirm-otp" method="post" class="mb-3">
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
             <div class="mb-4">
                 <label class="form-label small fw-bold text-uppercase">Code reçu par email</label>
                 <input type="text" name="otp_input" class="form-control otp-field"
@@ -83,6 +85,7 @@
         </form>
 
         <form action="${pageContext.request.contextPath}/patient/rendezvous/resend-otp" method="post" class="mb-3">
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
             <button type="submit" class="btn btn-outline-secondary w-100">
                 Renvoyer le code
             </button>
@@ -95,7 +98,6 @@
         </div>
     </div>
 </div>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

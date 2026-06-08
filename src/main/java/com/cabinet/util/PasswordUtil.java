@@ -43,6 +43,11 @@ public final class PasswordUtil {
         return BCrypt.checkpw(plainPassword, passwordHash);
     }
 
+    /** Alias pour verifyPassword utilisé dans certains DAOs. */
+    public static boolean checkPassword(String plainPassword, String passwordHash) {
+        return verifyPassword(plainPassword, passwordHash);
+    }
+
     /** Constructeur privé — classe utilitaire statique. */
     private PasswordUtil() {}
 }

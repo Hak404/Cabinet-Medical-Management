@@ -1,9 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<%
-    String ctx = request.getContextPath();
-%>
+
 <!doctype html>
 <html lang="fr">
 <head>
@@ -13,13 +11,12 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<%= ctx %>/css/style.css">
-    <link rel="stylesheet" href="<%= ctx %>/css/sidebar.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebar.css">
 </head>
 <body>
 <jsp:include page="/shared/navbar.jsp">
     <jsp:param name="title" value="Consultation"/>
-    <jsp:param name="userLabel" value="Médecin"/>
 </jsp:include>
 
 <div class="app-shell">
@@ -33,11 +30,11 @@
                 <div>
                     <h4 class="mb-1 fw-bold">Consultation</h4>
                     <div class="text-muted">
-                        RDV #<span class="fw-semibold">${rdv.id}</span> • ${rdv.dateRendezVous} • ${rdv.startTime} – ${rdv.endTime}
+                        RDV #<span class="fw-semibold"><c:out value="${rdv.id}"/></span> • <c:out value="${rdv.dateRendezVous}"/> • <c:out value="${rdv.startTime}"/> – <c:out value="${rdv.endTime}"/>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-outline-primary" href="<%= ctx %>/medecin/dashboard">
+                    <a class="btn btn-outline-primary" href="${pageContext.request.contextPath}/medecin/dashboard">
                         <i class="fa-solid fa-arrow-left me-2"></i>Retour
                     </a>
                 </div>
@@ -47,18 +44,18 @@
                 <div class="alert alert-success border-0 shadow-sm">Consultation et pièces associées enregistrées.</div>
             </c:if>
             <c:if test="${not empty param.error}">
-                <div class="alert alert-danger border-0 shadow-sm">Erreur : ${param.error}</div>
+                <div class="alert alert-danger border-0 shadow-sm">Erreur : <c:out value="${param.error}"/></div>
             </c:if>
             <c:if test="${param.docSuccess == '1'}">
                 <div class="alert alert-success border-0 shadow-sm">
-                    ${param.docCount} document(s) PDF généré(s) et enregistré(s).
+                    <c:out value="${param.docCount}"/> document(s) PDF généré(s) et enregistré(s).
                     <c:if test="${param.docEmailWarning == '1'}">
                         L'email au patient n'a pas pu être envoyé (vérifiez la configuration SMTP).
                     </c:if>
                 </div>
             </c:if>
             <c:if test="${not empty param.docError}">
-                <div class="alert alert-warning border-0 shadow-sm">${param.docError}</div>
+                <div class="alert alert-warning border-0 shadow-sm"><c:out value="${param.docError}"/></div>
             </c:if>
 
             <div class="row g-3">
@@ -69,15 +66,15 @@
                                 <i class="fa-solid fa-user-injured"></i>
                             </div>
                             <div>
-                                <div class="fw-bold">${rdv.patientNomComplet}</div>
-                                <div class="text-muted small">Patient ID: ${rdv.patientId}</div>
+                                <div class="fw-bold"><c:out value="${rdv.patientNomComplet}"/></div>
+                                <div class="text-muted small">Patient ID: <c:out value="${rdv.patientId}"/></div>
                             </div>
                         </div>
                         <hr class="my-3">
                         <div class="small text-muted mb-1">Cabinet</div>
-                        <div class="fw-semibold">${rdv.cabinetNom}</div>
+                        <div class="fw-semibold"><c:out value="${rdv.cabinetNom}"/></div>
                         <div class="small text-muted mt-3 mb-1">Statut RDV</div>
-                        <span class="badge-soft info">${rdv.statut}</span>
+                        <span class="badge-soft info"><c:out value="${rdv.statut}"/></span>
                     </div>
                 </div>
 
@@ -89,7 +86,8 @@
                         </div>
                         <div class="card-body p-0">
 
-                            <form method="post" action="<%= ctx %>/medecin/consultation" id="consultationForm">
+                            <form method="post" action="${pageContext.request.contextPath}/medecin/consultation" id="consultationForm">
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                 <input type="hidden" name="rdvId" value="${rdv.id}"/>
                                 <input type="hidden" name="selectedDate" value="${selectedDate}"/>
 
@@ -245,8 +243,8 @@
                                                                    <c:if test="${analyseCochees[entry.key]}">checked="checked"</c:if>
                                                             >
                                                             <span>
-                                                                <span class="fw-semibold d-block">${fn:escapeXml(entry.key)}</span>
-                                                                <span class="small text-muted">${fn:escapeXml(entry.value)}</span>
+                                                                <span class="fw-semibold d-block"><c:out value="${entry.key}"/></span>
+                                                                <span class="small text-muted"><c:out value="${entry.value}"/></span>
                                                             </span>
                                                         </label>
                                                     </div>
@@ -262,7 +260,7 @@
                                         <button class="btn btn-primary" type="submit">
                                             <i class="fa-solid fa-floppy-disk me-2"></i>Enregistrer tout
                                         </button>
-                                        <a class="btn btn-light border" href="<%= ctx %>/medecin/dashboard?selectedDate=${selectedDate}">Fermer</a>
+                                        <a class="btn btn-light border" href="${pageContext.request.contextPath}/medecin/dashboard?selectedDate=<c:out value="${selectedDate}"/>">Fermer</a>
                                     </div>
                                 </div>
                             </form>
@@ -274,8 +272,9 @@
                                             <div class="fw-semibold">Documents médicaux PDF</div>
                                             <div class="small text-muted">Ordonnance, analyses demandées et compte rendu (selon le contenu saisi).</div>
                                         </div>
-                                        <form method="post" action="<%= ctx %>/medecin/consultation/generate-documents"
+                                        <form method="post" action="${pageContext.request.contextPath}/medecin/consultation/generate-documents"
                                               onsubmit="return confirm('Générer les PDF et les envoyer par email au patient ?');">
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                             <input type="hidden" name="rdvId" value="${rdv.id}"/>
                                             <input type="hidden" name="selectedDate" value="${selectedDate}"/>
                                             <button type="submit" class="btn btn-success">
@@ -287,8 +286,8 @@
                                         <ul class="list-group list-group-flush small">
                                             <c:forEach var="doc" items="${documentsConsultation}">
                                                 <li class="list-group-item d-flex justify-content-between">
-                                                    <span>${doc.typeDocumentLabel} — ${doc.titre}</span>
-                                                    <span class="text-muted">${doc.dateCreation}</span>
+                                                    <span><c:out value="${doc.typeDocumentLabel}"/> — <c:out value="${doc.titre}"/></span>
+                                                    <span class="text-muted"><c:out value="${doc.dateCreation}"/></span>
                                                 </li>
                                             </c:forEach>
                                         </ul>

@@ -52,18 +52,21 @@
                                     <td>${r.statut}</td>
                                     <td class="d-flex gap-1">
                                         <form method="post" action="<%= ctx %>/medecin/rendezvous">
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                             <input type="hidden" name="selectedDate" value="${selectedDate}">
                                             <input type="hidden" name="rdvId" value="${r.id}">
                                             <input type="hidden" name="action" value="confirm">
                                             <button class="btn btn-sm btn-outline-success" type="submit">Confirmer</button>
                                         </form>
                                         <form method="post" action="<%= ctx %>/medecin/rendezvous">
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                             <input type="hidden" name="selectedDate" value="${selectedDate}">
                                             <input type="hidden" name="rdvId" value="${r.id}">
                                             <input type="hidden" name="action" value="attente">
                                             <button class="btn btn-sm btn-outline-warning" type="submit">Attente</button>
                                         </form>
                                         <form method="post" action="<%= ctx %>/medecin/rendezvous">
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                             <input type="hidden" name="selectedDate" value="${selectedDate}">
                                             <input type="hidden" name="rdvId" value="${r.id}">
                                             <input type="hidden" name="action" value="cancel">

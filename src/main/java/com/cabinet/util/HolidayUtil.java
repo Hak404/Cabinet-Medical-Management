@@ -3,6 +3,7 @@ package com.cabinet.util;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ public class HolidayUtil {
 
         try {
             // Construction de l'URL pour l'API Nager.Date (Pays : MA pour Maroc)
-            URL url = new URL("https://date.nager.at/api/v3/PublicHolidays/" + year + "/MA");
+            URL url = URI.create("https://date.nager.at/api/v3/PublicHolidays/" + year + "/MA").toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");

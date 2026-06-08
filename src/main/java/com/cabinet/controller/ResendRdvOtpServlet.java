@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 @WebServlet("/patient/rendezvous/resend-otp")
 public class ResendRdvOtpServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Override

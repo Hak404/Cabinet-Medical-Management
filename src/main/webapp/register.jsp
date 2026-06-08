@@ -64,6 +64,7 @@
         <% } %>
 
         <form method="post" action="${pageContext.request.contextPath}/patient/register">
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
             <div class="row" style="grid-template-columns: repeat(2,minmax(0,1fr));">
                 <div>
                     <label>Nom</label>

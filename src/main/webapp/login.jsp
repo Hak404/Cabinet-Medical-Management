@@ -98,6 +98,7 @@
                 <% } %>
 
                 <form method="post" action="<%= ctx %>/login" class="row g-3">
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                     <div class="col-12">
                         <label class="form-label fw-semibold">Email</label>
                         <input class="form-control" type="email" name="email" required>

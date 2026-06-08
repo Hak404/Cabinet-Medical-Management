@@ -1,30 +1,23 @@
 package com.cabinet.controller;
 
-import com.cabinet.dao.CabinetDAO;
-import com.cabinet.model.Cabinet;
-import com.cabinet.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Contrôleur MVC d'ajout de cabinet seul (désactivé au profit du formulaire combiné).
  *
  * <p>Mappé sur {@code @WebServlet("/admin/cabinets/add")}. Redirige vers le dashboard admin
- * avec une erreur invitant à utiliser {@link AddCabinetMedecinServlet}. Utilise
- * {@link CabinetDAO} en dépendance mais ne persiste pas via cette route.</p>
+ * avec une erreur invitant à utiliser {@link AddCabinetMedecinServlet}.</p>
  */
 @WebServlet("/admin/cabinets/add")
 public class AddCabinetServlet extends HttpServlet {
 
-    private final CabinetDAO cabinetDAO = new CabinetDAO();
+    private static final long serialVersionUID = 1L;
 
     /**
      * Rejette la création cabinet seul et redirige vers le formulaire combiné.

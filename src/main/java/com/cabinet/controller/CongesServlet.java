@@ -24,6 +24,7 @@ import java.util.List;
 @WebServlet("/medecin/conges")
 public class CongesServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final CongeDAO congeDAO = new CongeDAO();
 
     /**

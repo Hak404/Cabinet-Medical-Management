@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 @WebServlet("/patient/rdv/cancel")
 public class PatientRendezVousCancelServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final RendezVousDAO rendezVousDAO = new RendezVousDAO();
 
     /**
@@ -81,7 +82,7 @@ public class PatientRendezVousCancelServlet extends HttpServlet {
             return;
         }
 
-        RendezVous rdv = rendezVousDAO.findById(rdvId);
+        RendezVous rdv = rendezVousDAO.findById(rdvId).orElse(null);;
         if (rdv == null) {
             response.sendRedirect(dashboard + "?error=" + encode("Rendez-vous introuvable."));
             return;

@@ -118,6 +118,7 @@
                                     <c:choose>
                                         <c:when test="${s.available}">
                                             <form method="post" action="${pageContext.request.contextPath}/patient/rendezvous" style="margin:0;">
+                                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                                 <input type="hidden" name="cabinetId" value="${selectedCabinetId}"/>
                                                 <input type="hidden" name="medecinId" value="${selectedMedecinId}"/>
                                                 <input type="hidden" name="date" value="${date}"/>

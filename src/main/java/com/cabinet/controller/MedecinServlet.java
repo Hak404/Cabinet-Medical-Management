@@ -8,6 +8,7 @@ import com.cabinet.model.Conge;
 import com.cabinet.model.Medecin;
 import com.cabinet.model.RendezVous;
 import com.cabinet.model.User;
+import com.cabinet.util.CsrfTokenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -35,6 +36,7 @@ import java.util.Set;
 @WebServlet("/medecin/dashboard")
 public class MedecinServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final RendezVousDAO rendezVousDAO = new RendezVousDAO();
     private final ConsultationDAO consultationDAO = new ConsultationDAO();
     private final MedecinDAO medecinDAO = new MedecinDAO();
@@ -63,13 +65,16 @@ public class MedecinServlet extends HttpServlet {
             return;
         }
 
+        // Générer le jeton CSRF pour le tableau de bord médecin
+        CsrfTokenUtil.getToken(request);
+
         LocalDate selectedDate = parseDate(request.getParameter("selectedDate"));
         Long medecinId = user.getId();
         List<RendezVous> todayRdv = rendezVousDAO.findByMedecinAndDate(medecinId, selectedDate);
         long completed = todayRdv.stream().filter(r -> r.getStatut() == RendezVous.Statut.TERMINE).count();
         long remaining = Math.max(0, todayRdv.size() - completed);
         RendezVous next = selectedDate.equals(LocalDate.now()) ? rendezVousDAO.findNextForMedecin(medecinId) : null;
-        Medecin medecin = medecinDAO.findById(medecinId);
+        Medecin medecin = medecinDAO.findById(medecinId).orElse(null);
 
         request.setAttribute("todayPatientsCount", todayRdv.size());
         request.setAttribute("completedConsultations", completed);

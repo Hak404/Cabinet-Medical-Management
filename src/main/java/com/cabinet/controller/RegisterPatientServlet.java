@@ -2,6 +2,7 @@ package com.cabinet.controller;
 
 import com.cabinet.dao.UserDAO;
 import com.cabinet.service.AuthService;
+import com.cabinet.util.CsrfTokenUtil;
 import com.cabinet.util.EmailSendResult;
 import com.cabinet.util.EmailUtil;
 import jakarta.servlet.ServletException;
@@ -29,6 +30,7 @@ import java.util.logging.Logger;
 @WebServlet("/patient/register")
 public class RegisterPatientServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RegisterPatientServlet.class.getName());
 
     private final UserDAO userDAO = new UserDAO();
@@ -47,6 +49,10 @@ public class RegisterPatientServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+
+        // Générer le jeton CSRF pour le formulaire d'inscription
+        CsrfTokenUtil.getToken(request);
+
         request.getRequestDispatcher("/register.jsp").forward(request, response);
     }
 
@@ -93,7 +99,7 @@ public class RegisterPatientServlet extends HttpServlet {
             return;
         }
 
-        if (userDAO.findByEmail(email) != null) {
+        if (userDAO.findByEmail(email).isPresent()) {
             response.sendRedirect(ctx + "/register.jsp?error=email_deja_utilise");
             return;
         }

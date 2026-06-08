@@ -22,6 +22,7 @@ import java.nio.file.Path;
 @WebServlet("/patient/documents/file")
 public class PatientDocumentFileServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final DocumentMedicalDAO documentMedicalDAO = new DocumentMedicalDAO();
 
     @Override

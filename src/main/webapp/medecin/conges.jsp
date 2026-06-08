@@ -58,6 +58,7 @@
                                 <td>${conge.dateConge}</td>
                                 <td class="text-end">
                                     <form method="post" action="<%= ctx %>/medecin/conges" style="display:inline;">
+                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="${conge.id}">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>

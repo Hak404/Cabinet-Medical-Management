@@ -24,6 +24,7 @@ import java.time.LocalTime;
 @WebServlet("/patient/confirm-otp")
 public class ConfirmOTPServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     public static final String SESSION_OTP_FLOW = RdvOtpConstants.SESSION_OTP_FLOW;
     public static final String FLOW_RDV = RdvOtpConstants.FLOW_RDV;
 

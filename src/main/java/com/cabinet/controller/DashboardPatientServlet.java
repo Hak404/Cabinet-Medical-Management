@@ -3,6 +3,7 @@ package com.cabinet.controller;
 import com.cabinet.dao.RendezVousDAO;
 import com.cabinet.model.RendezVous;
 import com.cabinet.model.User;
+import com.cabinet.util.CsrfTokenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,6 +24,7 @@ import java.util.List;
 @WebServlet("/patient/dashboard")
 public class DashboardPatientServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final RendezVousDAO rendezVousDAO = new RendezVousDAO();
 
     /**
@@ -48,6 +50,9 @@ public class DashboardPatientServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/error.jsp?error=forbidden");
             return;
         }
+
+        // Générer le jeton CSRF pour les actions patient (annulation RDV)
+        CsrfTokenUtil.getToken(request);
 
         Long patientId = user.getId();
 

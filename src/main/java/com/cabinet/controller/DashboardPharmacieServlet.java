@@ -19,6 +19,8 @@ import java.io.IOException;
 @WebServlet("/pharmacie/dashboard")
 public class DashboardPharmacieServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Affiche le tableau de bord pharmacie.
      *

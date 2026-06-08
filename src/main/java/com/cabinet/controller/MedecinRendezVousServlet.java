@@ -5,6 +5,7 @@ import com.cabinet.dao.RendezVousDAO;
 import com.cabinet.model.Medecin;
 import com.cabinet.model.RendezVous;
 import com.cabinet.model.User;
+import com.cabinet.util.CsrfTokenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @WebServlet("/medecin/rendezvous")
 public class MedecinRendezVousServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final RendezVousDAO rendezVousDAO = new RendezVousDAO();
     private final MedecinDAO medecinDAO = new MedecinDAO();
 
@@ -50,9 +52,13 @@ public class MedecinRendezVousServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/error.jsp?error=forbidden");
             return;
         }
+
+        // Générer le jeton CSRF pour les actions sur les RDV
+        CsrfTokenUtil.getToken(request);
+
         LocalDate selectedDate = parseDate(request.getParameter("selectedDate"));
         List<RendezVous> rdvs = rendezVousDAO.findByMedecinAndDate(user.getId(), selectedDate);
-        Medecin medecin = medecinDAO.findById(user.getId());
+        Medecin medecin = medecinDAO.findById(user.getId()).orElse(null);
         request.setAttribute("selectedDate", selectedDate);
         request.setAttribute("currentCabinetId", medecin != null ? medecin.getCabinetId() : null);
         request.setAttribute("rdvs", rdvs);
@@ -85,7 +91,7 @@ public class MedecinRendezVousServlet extends HttpServlet {
         Long rdvId = parseLong(request.getParameter("rdvId"));
         String selectedDate = request.getParameter("selectedDate");
         if (rdvId != null && action != null) {
-            RendezVous rdv = rendezVousDAO.findById(rdvId);
+            RendezVous rdv = rendezVousDAO.findById(rdvId).orElse(null);
             if (rdv != null && user.getId().equals(rdv.getMedecinId())) {
                 if ("cancel".equals(action)) {
                     rendezVousDAO.updateStatut(rdvId, RendezVous.Statut.ANNULE);

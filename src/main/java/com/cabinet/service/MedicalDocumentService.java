@@ -82,19 +82,19 @@ public class MedicalDocumentService {
      * @return résultat avec documents créés et statut email
      */
     public GenerationResult generateForConsultation(Long rdvId, Long medecinUserId) {
-        RendezVous rdv = rendezVousDAO.findById(rdvId);
+        RendezVous rdv = rendezVousDAO.findById(rdvId).orElse(null);
         if (rdv == null || !medecinUserId.equals(rdv.getMedecinId())) {
             return new GenerationResult(List.of(), null, "Accès refusé ou rendez-vous introuvable.");
         }
 
-        Consultation consultation = consultationDAO.findByRendezVousId(rdvId);
+        Consultation consultation = consultationDAO.findByRendezVousId(rdvId).orElse(null);
         if (consultation == null || consultation.getId() == null) {
             return new GenerationResult(List.of(), null,
                     "Enregistrez d'abord la consultation avant de générer les documents.");
         }
 
-        Patient patient = patientDAO.findById(rdv.getPatientId());
-        Medecin medecin = medecinDAO.findById(rdv.getMedecinId());
+        Patient patient = patientDAO.findById(rdv.getPatientId()).orElse(null);
+        Medecin medecin = medecinDAO.findById(rdv.getMedecinId()).orElse(null);
         if (patient == null || medecin == null) {
             return new GenerationResult(List.of(), null, "Patient ou médecin introuvable.");
         }
@@ -119,16 +119,17 @@ public class MedicalDocumentService {
             Path patientDir = DocumentStorageUtil.getPatientDirectory(rdv.getPatientId());
 
             if (hasOrdonnanceContent(medicaments)) {
-                Path ordonnancePath = patientDir.resolve("ordonnance_" + consultation.getId() + ".pdf");
-                try {
-                    MedicalDocumentPdfGenerator.generateOrdonnance(
-                            ordonnancePath, patientNom, medecinNom, dateConsultation, medicaments);
-                } catch (Exception e) {
-                    throw new RuntimeException("Erreur génération ordonnance", e);
-                }
+                final List<MedicamentOrdonnance> finalMedicaments = medicaments;
                 DocumentMedical doc = buildAndSave(patientDir, rdv, consultation.getId(),
                         DocumentMedical.TypeDocument.ORDONNANCE, "ordonnance", dateConsultation,
-                        path -> {});              
+                        path -> {
+                            try {
+                                MedicalDocumentPdfGenerator.generateOrdonnance(
+                                        path, patientNom, medecinNom, dateConsultation, finalMedicaments);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                 created.add(doc);
                 filesForEmail.add(DocumentStorageUtil.resolveStoredPath(doc.getFilePath()));
             }
@@ -136,8 +137,14 @@ public class MedicalDocumentService {
             if (!codesAnalyse.isEmpty()) {
                 DocumentMedical doc = buildAndSave(patientDir, rdv, consultation.getId(),
                         DocumentMedical.TypeDocument.ANALYSE, "analyses", dateConsultation,
-                        path -> MedicalDocumentPdfGenerator.generateAnalyses(
-                                path, patientNom, medecinNom, dateConsultation, codesAnalyse, analyseLabels));
+                        path -> {
+                            try {
+                                MedicalDocumentPdfGenerator.generateAnalyses(
+                                        path, patientNom, medecinNom, dateConsultation, codesAnalyse, analyseLabels);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                 created.add(doc);
                 filesForEmail.add(DocumentStorageUtil.resolveStoredPath(doc.getFilePath()));
             }
@@ -145,9 +152,15 @@ public class MedicalDocumentService {
             if (hasCompteRenduContent(consultation)) {
                 DocumentMedical doc = buildAndSave(patientDir, rdv, consultation.getId(),
                         DocumentMedical.TypeDocument.COMPTE_RENDU, "compte_rendu", dateConsultation,
-                        path -> MedicalDocumentPdfGenerator.generateCompteRendu(
-                                path, patientNom, medecinNom, dateConsultation,
-                                consultation.getDiagnostic(), consultation.getRemarque()));
+                        path -> {
+                            try {
+                                MedicalDocumentPdfGenerator.generateCompteRendu(
+                                        path, patientNom, medecinNom, dateConsultation,
+                                        consultation.getDiagnostic(), consultation.getRemarque());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                 created.add(doc);
                 filesForEmail.add(DocumentStorageUtil.resolveStoredPath(doc.getFilePath()));
             }
@@ -183,7 +196,18 @@ public class MedicalDocumentService {
                                          PdfWriterAction writer) throws IOException, DocumentException {
         String fileName = DocumentStorageUtil.buildFileName(filePrefix, date);
         Path absolutePath = patientDir.resolve(fileName);
-        writer.write(absolutePath);
+        
+        try {
+            writer.write(absolutePath);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            } else if (e.getCause() instanceof DocumentException) {
+                throw (DocumentException) e.getCause();
+            } else {
+                throw e;
+            }
+        }
 
         DocumentMedical meta = new DocumentMedical();
         meta.setPatientId(rdv.getPatientId());

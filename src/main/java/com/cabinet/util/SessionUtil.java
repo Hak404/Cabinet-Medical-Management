@@ -42,6 +42,9 @@ public final class SessionUtil {
         session.setAttribute(SessionConstants.ATTR_USER_ID, user.getId());
         session.setAttribute(SessionConstants.ATTR_USER_EMAIL, user.getEmail());
         session.setAttribute(SessionConstants.ATTR_ROLE, user.getRole().name());
+        
+        // Génération du jeton CSRF pour la session
+        CsrfTokenUtil.getToken(session);
     }
 
     /**
