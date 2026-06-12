@@ -1,6 +1,7 @@
 package com.cabinet.dao;
 
 import com.cabinet.model.User;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 /**
@@ -18,13 +19,28 @@ public class UserDAO extends BaseDAO {
         user.setTelephone(rs.getString("telephone"));
         user.setRole(User.Role.valueOf(rs.getString("role")));
         user.setActive(rs.getBoolean("active"));
+        user.setVerificationCode(rs.getString("verification_code"));
+        Timestamp expiry = rs.getTimestamp("verification_expiry");
+        if (expiry != null) {
+            user.setVerificationExpiry(expiry.toLocalDateTime());
+        }
         return user;
-    };
+        };
 
-    public Optional<User> findByEmail(String email) {
-        String sql = "SELECT * FROM user WHERE email = ? AND active = true";
+        public Optional<User> findByEmail(String email) {
+        String sql = "SELECT * FROM user WHERE email = ?";
         return queryOne(sql, userMapper, email);
-    }
+        }
+
+        public void updateVerificationCode(Long userId, String code, java.time.LocalDateTime expiry) {
+        String sql = "UPDATE user SET verification_code = ?, verification_expiry = ? WHERE id = ?";
+        update(sql, code, Timestamp.valueOf(expiry), userId);
+        }
+
+        public boolean activateUser(String email) {
+        String sql = "UPDATE user SET active = true, verification_code = NULL, verification_expiry = NULL WHERE email = ?";
+        return update(sql, email) > 0;
+        }
 
     public Optional<User> findById(Long id) {
         String sql = "SELECT * FROM user WHERE id = ?";

@@ -30,13 +30,13 @@ public final class CsrfTokenUtil {
      */
     public static String getToken(HttpServletRequest request) {
         if (request == null) return null;
-        return getToken(request.getSession(true));
+        return getTokenFromSession(request.getSession(true));
     }
 
     /**
      * Récupère le jeton en session ou en génère un s'il est absent.
      */
-    public static String getToken(HttpSession session) {
+    public static String getTokenFromSession(HttpSession session) {
         if (session == null) return null;
         String token = (String) session.getAttribute(CSRF_TOKEN_ATTR);
         if (token == null) {

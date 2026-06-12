@@ -40,14 +40,20 @@
         </div>
         <% } %>
 
-        <form action="${pageContext.request.contextPath}/patient/confirm-otp" method="post">
+        <form action="${pageContext.request.contextPath}/verify-registration" method="post">
             <div class="mb-4">
                 <label class="form-label small fw-bold text-uppercase">Code reçu</label>
                 <input type="text" name="otp_input" class="form-control otp-field"
                        placeholder="000000" maxlength="6" required autocomplete="one-time-code"/>
             </div>
-            <% if (request.getParameter("error") != null) { %>
-            <div class="alert alert-danger py-2 small mb-4">Code incorrect, veuillez réessayer.</div>
+            <% 
+                String error = request.getParameter("error");
+                if (error != null) { 
+                    String msg = "Code incorrect, veuillez réessayer.";
+                    if ("code_expire".equals(error)) msg = "Le code a expiré. Veuillez recommencer l'inscription.";
+                    if ("utilisateur_introuvable".equals(error)) msg = "Utilisateur introuvable.";
+            %>
+            <div class="alert alert-danger py-2 small mb-4"><%= msg %></div>
             <% } %>
             <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-3">Confirmer mon inscription</button>
         </form>

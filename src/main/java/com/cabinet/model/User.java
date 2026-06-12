@@ -30,6 +30,8 @@ public class User {
     private String telephone;
     private Role role;
     private boolean active = true;
+    private String verificationCode;
+    private java.time.LocalDateTime verificationExpiry;
 
     /** Construit un utilisateur vide (instanciation par le DAO ou frameworks). */
     public User() {}
@@ -132,4 +134,10 @@ public class User {
      * @param active {@code true} pour activer le compte
      */
     public void setActive(boolean active) { this.active = active; }
+
+    public String getVerificationCode() { return verificationCode; }
+    public void setVerificationCode(String verificationCode) { this.verificationCode = verificationCode; }
+
+    public java.time.LocalDateTime getVerificationExpiry() { return verificationExpiry; }
+    public void setVerificationExpiry(java.time.LocalDateTime verificationExpiry) { this.verificationExpiry = verificationExpiry; }
 }

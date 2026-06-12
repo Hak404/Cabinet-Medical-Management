@@ -103,36 +103,34 @@ public class RegisterPatientServlet extends HttpServlet {
             response.sendRedirect(ctx + "/register.jsp?error=email_deja_utilise");
             return;
         }
+LOG.info(() -> "Inscription patient — tentative enregistrement, email=" + email);
 
-        LOG.info(() -> "Inscription patient — tentative enregistrement, email=" + email);
+String result = authService.registerPatient(
+        nom, prenom, telephone, email, password, cin, adresse, dateNaissance);
 
-        String errorCode = authService.registerPatient(
-                nom, prenom, telephone, email, password, cin, adresse, dateNaissance);
+// Si le résultat est un code à 6 chiffres, c'est un succès d'inscription (en attente de vérification)
+if (result != null && result.length() == 6 && result.matches("\\d{6}")) {
+    String confirmationCode = result;
+    LOG.info(() -> "Patient enregistré (inactif) — email=" + email + ", code=" + confirmationCode);
 
-        if (errorCode != null) {
-            LOG.warning(() -> "Échec enregistrement patient — email=" + email + ", erreur=" + errorCode);
-            response.sendRedirect(ctx + "/register.jsp?error=" + errorCode);
-            return;
-        }
+    EmailSendResult emailResult = EmailUtil.sendRegistrationConfirmation(email, confirmationCode);
 
-        LOG.info(() -> "Patient enregistré avec succès en base — email=" + email);
+    // Stocker l'email en session pour la page de vérification
+    request.getSession().setAttribute("pending_verification_email", email);
 
-        String confirmationCode = String.format("%06d", secureRandom.nextInt(1_000_000));
-        LOG.info(() -> "Code de confirmation généré pour " + email + " : " + confirmationCode);
+    if (emailResult.wasDelivered()) {
+        response.sendRedirect(ctx + "/register_verify_otp.jsp");
+    } else {
+        response.sendRedirect(ctx + "/register_verify_otp.jsp?warning=envoi_email");
+    }
+    return;
+}
 
-        EmailSendResult emailResult = EmailUtil.sendRegistrationConfirmation(email, confirmationCode);
-
-        if (emailResult.wasDelivered()) {
-            LOG.info(() -> "Email de confirmation envoyé avec succès à " + email);
-            response.sendRedirect(ctx + "/login.jsp?success=inscription_ok");
-            return;
-        }
-
-        String reason = emailResult.getMessage() != null ? emailResult.getMessage() : "erreur_envoi";
-        LOG.log(Level.WARNING, () -> "Échec envoi email inscription (compte créé) — email=" + email
-                + ", raison=" + reason + ", skipped=" + emailResult.isSkipped());
-        String detail = URLEncoder.encode(reason, StandardCharsets.UTF_8);
-        response.sendRedirect(ctx + "/login.jsp?success=inscription_ok&warning=envoi_email&detail=" + detail);
+if (result != null) {
+    LOG.warning(() -> "Échec enregistrement patient — email=" + email + ", erreur=" + result);
+    response.sendRedirect(ctx + "/register.jsp?error=" + result);
+    return;
+}
     }
 
     private static String trim(String s) {

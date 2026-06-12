@@ -17,7 +17,9 @@ CREATE TABLE `user` (
   password VARCHAR(255) NOT NULL,
   telephone VARCHAR(30) NOT NULL,
   role VARCHAR(20) NOT NULL,
-  active TINYINT(1) NOT NULL DEFAULT 1,
+  active TINYINT(1) NOT NULL DEFAULT 0,
+  verification_code VARCHAR(6),
+  verification_expiry TIMESTAMP NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uk_user_email (email),
   KEY ix_user_role (role)
